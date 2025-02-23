@@ -1,0 +1,308 @@
+@extends('layouts.app')
+
+@section('title', 'Student Management System ')
+
+@push('styles')
+<style>
+    .dashboard-container {
+        padding: 1.5rem;
+    }
+    .square-icon {
+        width: 48px;
+        height: 48px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .card {
+        border: none;
+        border-radius: 0.75rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        transition: transform 0.2s ease-in-out;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    .card-header {
+        background-color: transparent;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .card-subtitle {
+        font-size: 0.875rem;
+        letter-spacing: 0.5px;
+        opacity: 0.9;
+    }
+    .card-value {
+        font-size: 1.75rem;
+        font-weight: 600;
+    }
+    .progress {
+        border-radius: 0.5rem;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+    .table > :not(caption) > * > * {
+        padding: 1rem;
+    }
+    .bg-pink {
+        background-color: #FF9EB1 !important;
+    }
+    .bg-danger {
+        background: linear-gradient(45deg, #dc2626, #ef4444) !important;
+    }
+
+    .success-animation {
+        position: relative;
+        padding: 2rem 0;
+    }
+
+    .cap-container {
+        position: relative;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .graduation-cap {
+        font-size: 4rem;
+        color: #2563eb;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .confetti-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .confetti {
+        position: absolute;
+        font-size: 0.5rem;
+        animation: fall 1.5s linear infinite;
+    }
+
+    .c1 { color: #2563eb; left: 20%; animation-delay: 0s; }
+    .c2 { color: #059669; left: 40%; animation-delay: 0.2s; }
+    .c3 { color: #7c3aed; left: 60%; animation-delay: 0.4s; }
+    .c4 { color: #dc2626; left: 80%; animation-delay: 0.6s; }
+    .c5 { color: #d97706; left: 90%; animation-delay: 0.8s; }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    @keyframes fall {
+        0% { transform: translateY(-50px); opacity: 1; }
+        100% { transform: translateY(100px); opacity: 0; }
+    }
+</style>
+@endpush
+
+@section('content')
+<div class="container-fluid dashboard-container">
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-2 card-subtitle">Total Students</h6>
+                            <h2 class="mb-0 card-value">{{ $totalStudents }}</h2>
+                        </div>
+                        <div class="square-icon">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-2 card-subtitle">Graduates</h6>
+                            <h2 class="mb-0 card-value">{{ $totalGraduates }}</h2>
+                        </div>
+                        <div class="square-icon">
+                            <i class="fas fa-graduation-cap fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-2 card-subtitle">Placements</h6>
+                            <h2 class="mb-0 card-value">{{ $totalPlacements }}</h2>
+                        </div>
+                        <div class="square-icon">
+                            <i class="fas fa-briefcase fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-danger text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-2 card-subtitle">Avg. Package (LPA)</h6>
+                            <h2 class="mb-0 card-value">{{ number_format($averageSalary / 100000, 2) }}</h2>
+                        </div>
+                        <div class="square-icon">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overview Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header py-3">
+                    <h5 class="card-title mb-0">6-Month Overview</h5>
+                </div>
+                <div class="card-body p-4">
+                    <canvas id="overviewChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Batches and Recent Placements -->
+    <div class="row g-4">
+        <!-- Active Batches -->
+        <div class="col-xl-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header py-3">
+                    <h5 class="card-title mb-0">Active Batches</h5>
+                </div>
+                <div class="card-body p-4">
+                    @forelse($activeBatches as $batch)
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-bold">{{ $batch['name'] }}</span>
+                            <span class="text-muted">{{ $batch['progress'] }}%</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                style="width: {{ $batch['progress'] }}%" 
+                                aria-valuenow="{{ $batch['progress'] }}" 
+                                aria-valuemin="0" 
+                                aria-valuemax="100">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted">Students: {{ $batch['students'] }}</small>
+                            <small class="text-muted">Graduates: {{ $batch['graduates'] }}</small>
+                        </div>
+                    </div>
+                    @empty
+                    <p class="text-muted text-center my-4">No active batches found</p>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Placements -->
+        <div class="col-xl-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header py-3">
+                    <h5 class="card-title mb-0">Recent Placements</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="border-0">Student</th>
+                                    <th class="border-0">Company</th>
+                                    <th class="border-0 text-end">Package (LPA)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($recentPlacements as $placement)
+                                <tr>
+                                    <td>{{ $placement->name }}</td>
+                                    <td>{{ $placement->company_name }}</td>
+                                    <td class="text-end">{{ number_format($placement->salary / 100000, 2) }}</td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="3" class="text-center py-4">No recent placements</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Overview Chart
+    new Chart(document.getElementById('overviewChart'), {
+        type: 'bar',
+        data: {
+            labels: @json($monthlyStats['labels']),
+            datasets: [
+                {
+                    label: 'Students',
+                    data: @json($monthlyStats['students']),
+                    backgroundColor: 'rgba(13, 110, 253, 0.5)',
+                    borderColor: 'rgb(13, 110, 253)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Graduates',
+                    data: @json($monthlyStats['graduates']),
+                    backgroundColor: 'rgba(25, 135, 84, 0.5)',
+                    borderColor: 'rgb(25, 135, 84)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Placements',
+                    data: @json($monthlyStats['placements']),
+                    backgroundColor: 'rgba(13, 202, 240, 0.5)',
+                    borderColor: 'rgb(13, 202, 240)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+@endpush
+
+@endsection
