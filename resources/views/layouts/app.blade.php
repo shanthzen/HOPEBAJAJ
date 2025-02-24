@@ -533,7 +533,7 @@
     </div>
 
     <header class="main-header">
-        <h1 class="header-title">Student Management System</h1>
+        <h1 class="header-title">Bajaj Finserv - HOPE Artificial Intelligence School for Girls</h1>
         <div class="user-menu">
             <div class="d-flex flex-column align-items-end">
                 <span class="user-name text-white mb-1">{{ Auth::user()->name }}</span>
