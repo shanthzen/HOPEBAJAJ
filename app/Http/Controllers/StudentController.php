@@ -96,7 +96,7 @@ class StudentController extends Controller
             'faculty_name' => 'required',
             'full_name' => 'required|string',
             'email' => 'required|email|unique:enrolled_students,email',
-            'user_id' => 'required|email',
+            'student_user_id' => 'required|string',
             'user_credential' => 'nullable',
             'id_proof_type' => 'required',
             'id_proof_number' => 'required|unique:enrolled_students,id_proof_number',
@@ -143,16 +143,17 @@ class StudentController extends Controller
             if (!empty($validatedData['user_credential'])) {
                 $studentData['user_credential'] = $validatedData['user_credential'];
             } else {
-                // Create new user account
-                $user = User::create([
-                    'name' => $validatedData['full_name'],
-                    'email' => $validatedData['email'],
-                    'password' => Hash::make('password'), // Default password
-                    'role' => 'student'
-                ]);
+            // Create new user account
+            $user = User::create([
+                'name' => $validatedData['full_name'],
+                'username' => $request->input('student_user_id'),
+                'email' => $validatedData['email'],
+                'password' => Hash::make('password'), // Default password
+                'role' => 'student'
+            ]);
                 $studentData['user_credential'] = $user->id;
             }
-            $studentData['student_user_id'] = $request->input('user_id'); // Store email in student_user_id
+            $studentData['student_user_id'] = strtolower(trim($request->input('student_user_id'))); // Ensure plain text format
 
             // Create student record
             $student = EnrolledStudent::create($studentData);
@@ -221,14 +222,15 @@ class StudentController extends Controller
                 if ($user) {
                     $user->update([
                         'name' => $validatedData['full_name'],
-                        'email' => $validatedData['user_id'] // Use user_id as email
+                        'username' => $request->input('user_id')
                     ]);
                 }
             } else {
                 // Create new user if not exists
                 $user = User::create([
                     'name' => $validatedData['full_name'],
-                    'email' => $validatedData['user_id'], // Use user_id as email
+                    'username' => $request->input('student_user_id'),
+                    'email' => $validatedData['email'],
                     'password' => Hash::make('password'), // Default password
                     'role' => 'student'
                 ]);
@@ -257,7 +259,7 @@ class StudentController extends Controller
                 'is_pursuing' => $request->has('is_pursuing'),
                 'looking_for_job' => $request->has('looking_for_job'),
                 'user_credential' => $validatedData['user_credential'],
-                'student_user_id' => $request->input('user_id'), // Use the original request input
+                'student_user_id' => strtolower(trim($request->input('student_user_id'))), // Ensure plain text format
                 'course_enrolled' => $validatedData['course_enrolled']
             ];
 

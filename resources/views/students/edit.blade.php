@@ -53,8 +53,8 @@
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <label class="form-label text-muted small">Student User ID</label>
-                                <input type="email" class="form-control @error('user_id') is-invalid @enderror" name="user_id" value="{{ old('user_id', $student->student_user_id) }}" required>
-                                @error('user_id')
+                                <input type="text" class="form-control @error('student_user_id') is-invalid @enderror" name="student_user_id" value="{{ old('student_user_id', $student->student_user_id) }}" required>
+                                @error('student_user_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
