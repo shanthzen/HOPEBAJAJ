@@ -96,7 +96,7 @@ class StudentController extends Controller
             'faculty_name' => 'required',
             'full_name' => 'required|string',
             'email' => 'required|email|unique:enrolled_students,email',
-            'student_user_id' => 'required|string',
+            'student_user_id' => 'required|string|max:255|regex:/^[a-zA-Z0-9_\-]+$/',
             'user_credential' => 'nullable',
             'id_proof_type' => 'required',
             'id_proof_number' => 'required|unique:enrolled_students,id_proof_number',
