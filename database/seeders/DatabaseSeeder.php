@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminSeeder::class,
             DonorSeeder::class,
+            ConvertStudentIdsSeeder::class,
         ]);
     }
 }
